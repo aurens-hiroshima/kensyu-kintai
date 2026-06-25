@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>オーレンス 勤怠管理システム — モックアップ</title>
+<style>
+  :root {
+    --primary: #1a56db;
+    --primary-dark: #1342b0;
+    --primary-light: #ebf0ff;
+    --success: #0e9f6e;
+    --warning: #ff5a1f;
+    --danger: #e02424;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --sidebar-w: 220px;
+    --header-h: 56px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    background: var(--gray-100);
+    color: var(--gray-800);
+  }
+
+  /* ── Nav tabs (screen switcher) ── */
+  #nav-tabs {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 9999;
+    display: flex;
+    gap: 2px;
+    background: var(--gray-900);
+    padding: 6px 10px 0;
+    overflow-x: auto;
+  }
+  #nav-tabs button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px 6px 0 0;
+    background: var(--gray-700);
+    color: #ccc;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+    transition: background .15s;
+  }
+  #nav-tabs button.active { background: var(--primary); color: #fff; }
+  #nav-tabs button:hover:not(.active) { background: var(--gray-600); }
+
+  .screen { display: none; padding-top: 44px; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* ════════════════════════════════
+     画面01  ログイン
+  ════════════════════════════════ */
+  #s01 {
+    background: linear-gradient(135deg, #1a3a6e 0%, #1a56db 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .login-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 48px 40px 40px;
+    width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  }
+  .login-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .login-logo .brand { font-size: 22px; font-weight: 700; color: var(--primary); }
+  .login-logo .sub { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+  .form-group input[type=text],
+  .form-group input[type=password] {
+    width: 100%; padding: 10px 14px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 8px; font-size: 14px; outline: none;
+    transition: border-color .15s;
+  }
+  .form-group input:focus { border-color: var(--primary); }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-600); margin-bottom: 24px; }
+  .checkbox-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--primary); }
+  .btn-login {
+    width: 100%; padding: 12px;
+    background: var(--primary); color: #fff;
+    border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: background .15s;
+  }
+  .btn-login:hover { background: var(--primary-dark); }
+  .mfa-note { text-align: center; margin-top: 14px; font-size: 12px; color: var(--gray-400); }
+
+  /* ════════════════════════════════
+     共通レイアウト（ダッシュボード系）
+  ════════════════════════════════ */
+  .app-layout { display: flex; height: calc(100vh - 44px); }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--gray-900);
+    display: flex; flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    padding: 20px 20px 14px;
+    color: #fff;
+    font-size: 14px; font-weight: 700;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .sidebar-logo span { color: #93c5fd; font-size: 11px; font-weight: 400; display: block; margin-top: 2px; }
+  .sidebar-section { padding: 10px 0 4px 20px; font-size: 10px; color: var(--gray-500); letter-spacing: .08em; text-transform: uppercase; }
+  .sidebar nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 20px; color: var(--gray-400);
+    text-decoration: none; font-size: 13px;
+    transition: background .12s, color .12s;
+    border-left: 3px solid transparent;
+  }
+  .sidebar nav a:hover { background: rgba(255,255,255,.05); color: #fff; }
+  .sidebar nav a.active { background: rgba(26,86,219,.2); color: #93c5fd; border-left-color: var(--primary); }
+  .sidebar nav a .icon { font-size: 16px; }
+  .sidebar-user {
+    margin-top: auto;
+    padding: 14px 20px;
+    border-top: 1px solid rgba(255,255,255,.08);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .sidebar-user .info { color: #e5e7eb; font-size: 12px; }
+  .sidebar-user .info span { color: var(--gray-400); font-size: 11px; display: block; }
+
+  .main { flex: 1; overflow-y: auto; background: var(--gray-100); }
+
+  .topbar {
+    height: var(--header-h);
+    background: #fff;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex; align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+  }
+  .topbar h1 { font-size: 16px; font-weight: 700; color: var(--gray-800); flex: 1; }
+  .topbar .badge {
+    padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 600;
+    background: #def7ec; color: var(--success);
+  }
+  .topbar .badge.warn { background: #fde8d8; color: var(--warning); }
+  .topbar .btn-sm {
+    padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600;
+    border: 1.5px solid var(--primary); color: var(--primary);
+    cursor: pointer; background: transparent; transition: all .12s;
+  }
+  .topbar .btn-sm:hover { background: var(--primary); color: #fff; }
+
+  .page-body { padding: 24px; }
+
+  /* ── カード ── */
+  .card {
+    background: #fff; border-radius: 12px;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .card-header {
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-header h2 { font-size: 14px; font-weight: 700; }
+  .card-body { padding: 20px; }
+
+  /* ── KPI グリッド ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+  .kpi-card {
+    background: #fff; border-radius: 12px;
+    border: 1px solid var(--gray-200);
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .kpi-card .label { font-size: 11px; color: var(--gray-500); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .kpi-card .value { font-size: 28px; font-weight: 700; color: var(--gray-800); margin-top: 4px; }
+  .kpi-card .unit { font-size: 13px; color: var(--gray-500); }
+  .kpi-card .diff { font-size: 12px; margin-top: 6px; }
+  .kpi-card .diff.up { color: var(--danger); }
+  .kpi-card .diff.down { color: var(--success); }
+  .kpi-card.accent { background: var(--primary); border-color: transparent; }
+  .kpi-card.accent .label, .kpi-card.accent .unit { color: rgba(255,255,255,.7); }
+  .kpi-card.accent .value { color: #fff; }
+
+  /* ── アラートバナー ── */
+  .alert-bar {
+    border-radius: 8px; padding: 10px 16px;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px; font-size: 13px;
+  }
+  .alert-bar.warn { background: #fde8d8; color: var(--warning); }
+  .alert-bar.info { background: #ebf0ff; color: var(--primary); }
+
+  /* ── テーブル ── */
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--gray-50); padding: 10px 12px;
+    text-align: left; font-size: 11px; font-weight: 600;
+    color: var(--gray-500); letter-spacing: .04em;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--gray-50); }
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 99px;
+    font-size: 11px; font-weight: 600;
+  }
+  .tag.green { background: #def7ec; color: var(--success); }
+  .tag.blue { background: #ebf0ff; color: var(--primary); }
+  .tag.orange { background: #fde8d8; color: var(--warning); }
+  .tag.red { background: #fde8e8; color: var(--danger); }
+  .tag.gray { background: var(--gray-100); color: var(--gray-600); }
+
+  /* ════════════════════════════════
+     画面02  ダッシュボード
+  ════════════════════════════════ */
+  .clock-display {
+    font-size: 48px; font-weight: 700; color: var(--gray-800);
+    text-align: center; letter-spacing: .04em;
+  }
+  .clock-sub { text-align: center; color: var(--gray-400); font-size: 13px; margin-top: 4px; }
+  .stamp-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+  .stamp-btn {
+    padding: 16px;
+    border-radius: 10px; border: none;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: opacity .12s;
+  }
+  .stamp-btn:hover { opacity: .85; }
+  .stamp-btn.start { background: var(--primary); color: #fff; }
+  .stamp-btn.end { background: var(--gray-700); color: #fff; }
+  .stamp-btn.out { background: var(--warning); color: #fff; }
+  .stamp-btn.back { background: var(--success); color: #fff; }
+  .gps-bar {
+    margin-top: 16px; padding: 10px 14px;
+    background: var(--gray-50); border-radius: 8px; border: 1px solid var(--gray-200);
+    display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--gray-600);
+  }
+  .gps-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* ════════════════════════════════
+     画面05  シフト管理
+  ════════════════════════════════ */
+  .shift-grid { overflow-x: auto; }
+  .shift-table { min-width: 700px; }
+  .shift-table th, .shift-table td {
+    text-align: center; padding: 8px 10px;
+    border: 1px solid var(--gray-200);
+    font-size: 12px;
+  }
+  .shift-table th { background: var(--gray-50); }
+  .shift-table td:first-child { text-align: left; font-weight: 600; background: var(--gray-50); }
+  .shift-cell { border-radius: 4px; padding: 2px 6px; display: inline-block; font-size: 11px; font-weight: 700; }
+  .shift-cell.e { background: #dbeafe; color: #1d4ed8; }   /* 早 */
+  .shift-cell.l { background: #fef3c7; color: #92400e; }   /* 遅 */
+  .shift-cell.n { background: #1f2937; color: #e5e7eb; }   /* 夜 */
+  .shift-cell.off { background: var(--gray-100); color: var(--gray-400); } /* 休 */
+  .day-header.holiday { color: var(--danger); }
+
+  /* ════════════════════════════════
+     画面06  休暇申請
+  ════════════════════════════════ */
+  .form-label { font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; display: block; }
+  .form-control {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid var(--gray-300); border-radius: 8px;
+    font-size: 14px; outline: none; transition: border-color .15s;
+    background: #fff;
+  }
+  .form-control:focus { border-color: var(--primary); }
+  .form-row { margin-bottom: 16px; }
+  .form-row.half { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn-primary {
+    padding: 10px 24px; background: var(--primary); color: #fff;
+    border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background .12s;
+  }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-outline {
+    padding: 10px 24px; background: transparent; color: var(--gray-600);
+    border: 1.5px solid var(--gray-300); border-radius: 8px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .12s;
+  }
+  .btn-outline:hover { border-color: var(--gray-500); color: var(--gray-800); }
+  .btn-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+  .days-counter {
+    background: var(--primary-light); border-radius: 8px; padding: 12px 16px;
+    margin-top: 16px; display: flex; align-items: center; gap: 8px;
+    color: var(--primary); font-size: 13px; font-weight: 600;
+  }
+  .quota-bar {
+    height: 6px; border-radius: 3px; background: var(--gray-200); margin-top: 10px; overflow: hidden;
+  }
+  .quota-fill { height: 100%; border-radius: 3px; background: var(--primary); }
+
+  /* ════════════════════════════════
+     画面08  管理者 ダッシュボード
+  ════════════════════════════════ */
+  .chart-container { height: 160px; position: relative; overflow: hidden; border-radius: 8px; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 140px; padding: 0 4px; }
+  .bar-chart .bar {
+    flex: 1; border-radius: 4px 4px 0 0;
+    background: var(--primary-light);
+    position: relative; cursor: pointer; transition: background .12s;
+    min-width: 20px;
+  }
+  .bar-chart .bar:hover { background: var(--primary); }
+  .bar-chart .bar .tooltip {
+    display: none; position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+    background: var(--gray-900); color: #fff; font-size: 10px;
+    padding: 3px 7px; border-radius: 4px; white-space: nowrap;
+  }
+  .bar-chart .bar:hover .tooltip { display: block; }
+  .bar-labels { display: flex; gap: 6px; padding: 4px; }
+  .bar-labels span { flex: 1; text-align: center; font-size: 10px; color: var(--gray-400); min-width: 20px; }
+
+  .line-chart { position: relative; height: 140px; padding: 10px 0 0; }
+  .line-chart svg { width: 100%; height: 120px; overflow: visible; }
+
+  .donut-wrap {
+    display: flex; align-items: center; gap: 16px; padding: 12px 0;
+  }
+  .donut-wrap svg { flex-shrink: 0; }
+  .legend { display: flex; flex-direction: column; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .risk-table { font-size: 12px; }
+  .risk-table td { padding: 8px 10px; }
+  .risk-bar-wrap { width: 120px; }
+  .risk-bar { height: 6px; border-radius: 3px; background: var(--gray-200); overflow: hidden; }
+  .risk-bar-fill { height: 100%; border-radius: 3px; }
+
+  .alert36 {
+    border-radius: 8px; padding: 12px 16px;
+    font-size: 13px; margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .alert36.danger { background: #fde8e8; color: var(--danger); }
+  .alert36.warning { background: #fde8d8; color: var(--warning); }
+  .alert36.ok { background: #def7ec; color: var(--success); }
+
+  /* step progress */
+  .schedule-steps { display: flex; gap: 0; margin-bottom: 24px; }
+  .step {
+    flex: 1; padding: 10px; text-align: center; font-size: 11px; font-weight: 600;
+    position: relative;
+    background: var(--gray-100); color: var(--gray-500);
+    border-top: 2px solid var(--gray-300);
+  }
+  .step.done { background: var(--primary-light); color: var(--primary); border-top-color: var(--primary); }
+  .step.active { background: var(--primary); color: #fff; border-top-color: var(--primary-dark); }
+  .step .pct { font-size: 9px; font-weight: 400; display: block; }
+
+  /* timeline */
+  .timeline { display: flex; margin: 20px 0; gap: 0; }
+  .tl-item { flex: 1; position: relative; padding: 24px 12px 12px; }
+  .tl-item::before {
+    content: ''; position: absolute; top: 10px; left: 0; right: 0;
+    height: 3px; background: var(--gray-200);
+  }
+  .tl-item:first-child::before { left: 50%; }
+  .tl-item:last-child::before { right: 50%; }
+  .tl-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    position: absolute; top: 3px; left: calc(50% - 8px);
+    border: 2px solid #fff;
+    z-index: 1;
+  }
+  .tl-dot.done { background: var(--success); }
+  .tl-dot.active { background: var(--primary); box-shadow: 0 0 0 3px rgba(26,86,219,.2); }
+  .tl-dot.future { background: var(--gray-300); }
+  .tl-item .tl-label { font-size: 11px; font-weight: 700; color: var(--gray-700); text-align: center; }
+  .tl-item .tl-sub { font-size: 10px; color: var(--gray-400); text-align: center; margin-top: 2px; }
+
+  /* notification dot */
+  .notif {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--danger); color: #fff; font-size: 10px; font-weight: 700;
+    margin-left: 6px;
+  }
+
+  /* responsive tweak */
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Screen Switcher ── -->
+<div id="nav-tabs">
+  <button class="active" onclick="show('s01',this)">01 ログイン</button>
+  <button onclick="show('s02',this)">02 ダッシュボード</button>
+  <button onclick="show('s03',this)">03 打刻</button>
+  <button onclick="show('s04',this)">04 勤怠一覧</button>
+  <button onclick="show('s05',this)">05 シフト管理</button>
+  <button onclick="show('s06',this)">06 休暇申請</button>
+  <button onclick="show('s07',this)">07 承認</button>
+  <button onclick="show('s08',this)">08 管理者ダッシュボード</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     画面01  ログイン
+══════════════════════════════════════════ -->
+<div id="s01" class="screen active" style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 44px);background:linear-gradient(135deg,#1a3a6e 0%,#1a56db 100%);">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="48" height="48" viewBox="0 0 48 48" style="margin:0 auto 10px;display:block">
+        <rect width="48" height="48" rx="12" fill="#1a56db"/>
+        <path d="M14 24a10 10 0 1 1 10 10" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <circle cx="24" cy="24" r="3" fill="#fff"/>
+        <path d="M24 14v4M24 30v4M14 24h4M30 24h4" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="brand">オーレンス勤怠システム</div>
+      <div class="sub">Ollens Attendance Management v2.0</div>
+    </div>
+    <div class="form-group">
+      <label>ユーザーID</label>
+      <input type="text" placeholder="user@ollens.co.jp" value="yamada.taro">
+    </div>
+    <div class="form-group">
+      <label>パスワード</label>
+      <input type="password" value="••••••••">
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="rem" checked>
+      <label for="rem">ログイン状態を保持する</label>
+    </div>
+    <button class="btn-login" onclick="show('s02',document.querySelectorAll('#nav-tabs button')[1])">ログイン</button>
+    <div class="mfa-note">🔐 MFA認証・SSO対応 ／ IP制限・操作ログ記録中</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     画面02  ダッシュボード（従業員）
+══════════════════════════════════════════ -->
+<div id="s02" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">オーレンス勤怠 <span>Employee Portal</span></div>
+      <nav>
+        <div class="sidebar-section">メインメニュー</div>
+        <a href="#" class="active"><span class="icon">🏠</span> ダッシュボード</a>
+        <a href="#" onclick="show('s03',document.querySelectorAll('#nav-tabs button')[2]);return false"><span class="icon">🕐</span> 打刻</a>
+        <a href="#" onclick="show('s04',document.querySelectorAll('#nav-tabs button')[3]);return false"><span class="icon">📋</span> 勤怠一覧</a>
+        <a href="#" onclick="show('s05',document.querySelectorAll('#nav-tabs button')[4]);return false"><span class="icon">📅</span> シフト管理</a>
+        <a href="#" onclick="show('s06',document.querySelectorAll('#nav-tabs button')[5]);return false"><span class="icon">🌴</span> 休暇申請</a>
+        <div class="sidebar-section">ワークフロー</div>
+        <a href="#" onclick="show('s07',document.querySelectorAll('#nav-tabs button')[6]);return false"><span class="icon">✅</span> 申請・承認<span class="notif">3</span></a>
+        <a href="#"><span class="icon">📄</span> 帳票出力</a>
+        <div class="sidebar-section">設定</div>
+        <a href="#"><span class="icon">⚙️</span> 個人設定</a>
+      </nav>
+      <div class="sidebar-user">
+        <div class="avatar">山</div>
+        <div class="info">山田 太郎<span>営業部 / 一般</span></div>
+      </div>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <h1>ダッシュボード</h1>
+        <span class="badge">● 出勤中 &nbsp;09:05〜</span>
+        <span style="font-size:13px;color:var(--gray-500)">2026年6月25日（木）</span>
+      </div>
+      <div class="page-body">
+
+        <div class="alert-bar warn" style="margin-bottom:16px">
+          ⚠️ 打刻漏れが1件あります。<a href="#" style="color:inherit;text-decoration:underline;margin-left:4px">確認する</a>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card accent">
+            <div class="label">今月勤務時間</div>
+            <div class="value">152<span class="unit" style="font-size:18px">h</span></div>
+            <div class="diff" style="color:rgba(255,255,255,.7)">先月比 +4.5h</div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">残業時間</div>
+            <div class="value">18<span class="unit">h</span></div>
+            <div class="diff up">▲ 先月比 +2h</div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">有給残日数</div>
+            <div class="value">12<span class="unit">日</span></div>
+            <div class="diff down">今年度取得済 6日</div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">未承認申請</div>
+            <div class="value" style="color:var(--warning)">3<span class="unit">件</span></div>
+            <div class="diff up">要対応</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap:16px">
+          <!-- 今日の打刻状況 -->
+          <div class="card">
+            <div class="card-header"><h2>本日の打刻状況</h2></div>
+            <div class="card-body">
+              <table>
+                <thead><tr><th>種別</th><th>時刻</th><th>打刻方法</th><th>状態</th></tr></thead>
+                <tbody>
+                  <tr><td>出勤</td><td>09:05</td><td>顔認証</td><td><span class="tag green">確定</span></td></tr>
+                  <tr><td>外出</td><td>12:00</td><td>GPS</td><td><span class="tag green">確定</span></td></tr>
+                  <tr><td>戻り</td><td>13:15</td><td>GPS</td><td><span class="tag green">確定</span></td></tr>
+                  <tr><td>退勤</td><td>—</td><td>—</td><td><span class="tag gray">未打刻</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 最近の申請 -->
+          <div class="card">
+            <div class="card-header"><h2>直近の申請状況</h2></div>
+            <div class="card-body">
+              <table>
+                <thead><tr><th>申請種別</th><th>対象日</th><th>状態</th></tr></thead>
+                <tbody>
+                  <tr><td>有給休暇</td><td>7/1</td><td><span class="tag orange">申請中</span></td></tr>
+                  <tr><td>残業申請</td><td>6/24</td><td><span class="tag green">承認済</span></td></tr>
+                  <tr><td>打刻修正</td><td>6/20</td><td><span class="tag green">承認済</span></td></tr>
+                  <tr><td>有給休暇</td><td>6/10</td><td><span class="tag blue">取得済</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 有給取得率バー -->
+        <div class="card" style="margin-top:16px">
+          <div class="card-header"><h2>有給取得状況（年度累計）</h2></div>
+          <div class="card-body">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-500);margin-bottom:8px">
+              <span>取得済：6日</span><span>残：12日 ／ 付与：18日</span>
+            </div>
+            <div class="quota-bar"><div class="quota-fill" style="width:33%"></div></div>
+            <div style="font-size:11px;color:var(--gray-400);margin-top:6px">取得率 33.3%　— 法定義務達成まであと 4日</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     画面03  打刻
+══════════════════════════════════════════ -->
+<div id="s03" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">オーレンス勤怠 <span>Employee Portal</span></div>
+      <nav>
+        <a href="#" onclick="show('s02',document.querySelectorAll('#nav-tabs button')[1]);return false"><span class="icon">🏠</span> ダッシュボード</a>
+        <a href="#" class="active"><span class="icon">🕐</span> 打刻</a>
+        <a href="#" onclick="show('s04',document.querySelectorAll('#nav-tabs button')[3]);return false"><span class="icon">📋</span> 勤怠一覧</a>
+        <a href="#" onclick="show('s05',document.querySelectorAll('#nav-tabs button')[4]);return false"><span class="icon">📅</span> シフト管理</a>
+        <a href="#" onclick="show('s06',document.querySelectorAll('#nav-tabs button')[5]);return false"><span class="icon">🌴</span> 休暇申請</a>
+        <a href="#" onclick="show('s07',document.querySelectorAll('#nav-tabs button')[6]);return false"><span class="icon">✅</span> 申請・承認</a>
+      </nav>
+      <div class="sidebar-user"><div class="avatar">山</div><div class="info">山田 太郎<span>営業部</span></div></div>
+    </aside>
+    <div class="main">
+      <div class="topbar"><h1>打刻</h1><span class="badge">● 出勤中</span></div>
+      <div class="page-body">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h2>現在時刻</h2></div>
+            <div class="card-body" style="text-align:center;padding:32px 20px">
+              <div class="clock-display" id="clock">09:01</div>
+              <div class="clock-sub">2026年6月25日（木）</div>
+              <div class="stamp-buttons">
+                <button class="stamp-btn start">🟢 出勤</button>
+                <button class="stamp-btn end">⬛ 退勤</button>
+                <button class="stamp-btn out">🟠 外出</button>
+                <button class="stamp-btn back">✅ 戻り</button>
+              </div>
+              <div class="gps-bar">
+                <span class="gps-dot"></span>
+                GPS取得済み &nbsp;📍 中標津町東1条南3丁目
+              </div>
+              <div style="margin-top:12px;font-size:12px;color:var(--gray-400)">
+                ICカード / 顔認証 にも対応
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h2>本日の打刻履歴</h2></div>
+            <div class="card-body">
+              <table>
+                <thead><tr><th>種別</th><th>時刻</th><th>方法</th><th>場所</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>出勤</td><td><strong>09:01</strong></td><td>顔認証</td>
+                    <td style="font-size:11px;color:var(--gray-400)">本社1F</td>
+                  </tr>
+                  <tr>
+                    <td>外出</td><td>12:00</td><td>GPS</td>
+                    <td style="font-size:11px;color:var(--gray-400)">中標津町東1条</td>
+                  </tr>
+                  <tr>
+                    <td>戻り</td><td>13:15</td><td>GPS</td>
+                    <td style="font-size:11px;color:var(--gray-400)">本社付近</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div style="margin-top:20px">
+                <div class="form-label">備考・コメント</div>
+                <textarea class="form-control" rows="3" placeholder="外出先・業務内容など（任意）"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     画面04  勤怠一覧
+══════════════════════════════════════════ -->
+<div id="s04" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">オーレンス勤怠<span>Employee Portal</span></div>
+      <nav>
+        <a href="#" onclick="show('s02',document.querySelectorAll('#nav-tabs button')[1]);return false"><span class="icon">🏠</span> ダッシュボード</a>
+        <a href="#"><span class="icon">🕐</span> 打刻</a>
+        <a href="#" class="active"><span class="icon">📋</span> 勤怠一覧</a>
+        <a href="#" onclick="show('s05',document.querySelectorAll('#nav-tabs button')[4]);return false"><span class="icon">📅</span> シフト管理</a>
+        <a href="#" onclick="show('s06',document.querySelectorAll('#nav-tabs button')[5]);return false"><span class="icon">🌴</span> 休暇申請</a>
+        <a href="#" onclick="show('s07',document.querySelectorAll('#nav-tabs button')[6]);return false"><span class="icon">✅</span> 申請・承認</a>
+      </nav>
+      <div class="sidebar-user"><div class="avatar">山</div><div class="info">山田 太郎<span>営業部</span></div></div>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <h1>勤怠一覧</h1>
+        <select class="form-control" style="width:auto;padding:6px 10px;font-size:13px">
+          <option>2026年6月</option><option>2026年5月</option><option>2026年4月</option>
+        </select>
+        <button class="btn-sm">📥 CSVエクスポート</button>
+      </div>
+      <div class="page-body">
+        <div class="kpi-grid" style="margin-bottom:16px">
+          <div class="kpi-card"><div class="label">出勤日数</div><div class="value">19<span class="unit">日</span></div></div>
+          <div class="kpi-card"><div class="label">合計勤務</div><div class="value">152<span class="unit">h</span></div></div>
+          <div class="kpi-card"><div class="label">残業時間</div><div class="value" style="color:var(--warning)">18<span class="unit">h</span></div></div>
+          <div class="kpi-card"><div class="label">遅刻・早退</div><div class="value">0<span class="unit">件</span></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2>日次勤怠</h2></div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>日付</th><th>曜日</th><th>出勤</th><th>退勤</th>
+                  <th>休憩</th><th>実働</th><th>残業</th><th>備考</th><th>状態</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>6/1</td><td>月</td><td>08:55</td><td>17:30</td><td>1h</td><td>7.5h</td><td>0.5h</td><td></td><td><span class="tag green">確定</span></td></tr>
+                <tr><td>6/2</td><td>火</td><td>08:58</td><td>18:20</td><td>1h</td><td>8.3h</td><td>1.3h</td><td></td><td><span class="tag green">確定</span></td></tr>
+                <tr><td>6/3</td><td>水</td><td>09:01</td><td>17:10</td><td>1h</td><td>7.0h</td><td>0.0h</td><td></td><td><span class="tag green">確定</span></td></tr>
+                <tr><td>6/4</td><td>木</td><td>08:50</td><td>19:00</td><td>1h</td><td>9.0h</td><td>2.0h</td><td>残業申請済</td><td><span class="tag green">確定</span></td></tr>
+                <tr><td>6/5</td><td>金</td><td>09:05</td><td>17:30</td><td>1h</td><td>7.5h</td><td>0.5h</td><td></td><td><span class="tag green">確定</span></td></tr>
+                <tr style="background:#fafaf0"><td>6/6</td><td style="color:#aaa">土</td><td colspan="7" style="color:var(--gray-300);text-align:center">休日</td></tr>
+                <tr style="background:#fff5f5"><td>6/7</td><td style="color:var(--danger)">日</td><td colspan="7" style="color:var(--gray-300);text-align:center">休日</td></tr>
+                <tr><td>6/8</td><td>月</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>有給休暇</td><td><span class="tag blue">有給</span></td></tr>
+                <tr><td>6/9</td><td>火</td><td>09:00</td><td>17:30</td><td>1h</td><td>7.5h</td><td>0.5h</td><td></td><td><span class="tag green">確定</span></td></tr>
+                <tr><td>6/10</td><td>水</td><td>09:10</td><td>17:30</td><td>1h</td><td>7.3h</td><td>0.0h</td><td></td><td><span class="tag green">確定</span></td></tr>
+                <tr style="background:#fff8f8"><td>6/20</td><td>土</td><td>09:05</td><td>—</td><td>—</td><td>—</td><td>—</td><td>退勤漏れ</td><td><span class="tag red">要修正</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     画面05  シフト管理
+══════════════════════════════════════════ -->
+<div id="s05" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">オーレンス勤怠<span>Manager View</span></div>
+      <nav>
+        <a href="#" onclick="show('s02',document.querySelectorAll('#nav-tabs button')[1]);return false"><span class="icon">🏠</span> ダッシュボード</a>
+        <a href="#"><span class="icon">🕐</span> 打刻</a>
+        <a href="#" onclick="show('s04',document.querySelectorAll('#nav-tabs button')[3]);return false"><span class="icon">📋</span> 勤怠一覧</a>
+        <a href="#" class="active"><span class="icon">📅</span> シフト管理</a>
+        <a href="#" onclick="show('s06',document.querySelectorAll('#nav-tabs button')[5]);return false"><span class="icon">🌴</span> 休暇申請</a>
+        <a href="#" onclick="show('s07',document.querySelectorAll('#nav-tabs button')[6]);return false"><span class="icon">✅</span> 申請・承認</a>
+      </nav>
+      <div class="sidebar-user"><div class="avatar">田</div><div class="info">田中 部長<span>営業部 / 管理者</span></div></div>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <h1>シフト管理</h1>
+        <select class="form-control" style="width:auto;padding:6px 10px;font-size:13px">
+          <option>2026年7月</option><option>2026年8月</option>
+        </select>
+        <button class="btn-primary" style="padding:7px 16px;font-size:13px">🤖 AIシフト自動作成</button>
+        <button class="btn-sm">📥 出力</button>
+      </div>
+      <div class="page-body">
+        <div class="alert-bar info" style="margin-bottom:16px">
+          💡 AIが希望シフトを元に最適なシフトを自動生成できます。「AIシフト自動作成」をクリックしてください。
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h2>月次シフト表 — 2026年7月</h2>
+            <div style="display:flex;gap:8px;font-size:12px">
+              <span style="display:flex;align-items:center;gap:4px"><span class="shift-cell e">早</span> 早番 7:00〜16:00</span>
+              <span style="display:flex;align-items:center;gap:4px"><span class="shift-cell l">遅</span> 遅番 10:00〜19:00</span>
+              <span style="display:flex;align-items:center;gap:4px"><span class="shift-cell n">夜</span> 夜番 22:00〜7:00</span>
+              <span style="display:flex;align-items:center;gap:4px"><span class="shift-cell off">休</span> 休日</span>
+            </div>
+          </div>
+          <div class="card-body shift-grid">
+            <table class="shift-table">
+              <thead>
+                <tr>
+                  <th style="width:80px">氏名</th>
+                  <th class="day-header">1<br><span style="font-size:9px;color:var(--gray-400)">水</span></th>
+                  <th class="day-header">2<br><span style="font-size:9px;color:var(--gray-400)">木</span></th>
+                  <th class="day-header">3<br><span style="font-size:9px;color:var(--gray-400)">金</span></th>
+                  <th class="day-header" style="color:#aaa">4<br><span style="font-size:9px">土</span></th>
+                  <th class="day-header holiday">5<br><span style="font-size:9px">日</span></th>
+                  <th class="day-header">6<br><span style="font-size:9px;color:var(--gray-400)">月</span></th>
+                  <th class="day-header">7<br><span style="font-size:9px;color:var(--gray-400)">火</span></th>
+                  <th class="day-header">8<br><span style="font-size:9px;color:var(--gray-400)">水</span></th>
+                  <th class="day-header">9<br><span style="font-size:9px;color:var(--gray-400)">木</span></th>
+                  <th class="day-header">10<br><span style="font-size:9px;color:var(--gray-400)">金</span></th>
+                  <th>…</th>
+                  <th>合計</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>山田 太郎</td>
+                  <td><span class="shift-cell e">早</span></td>
+                  <td><span class="shift-cell e">早</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell l">遅</span></td>
+                  <td><span class="shift-cell l">遅</span></td>
+                  <td><span class="shift-cell n">夜</span></td>
+                  <td><span class="shift-cell n">夜</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td style="color:var(--gray-400)">…</td>
+                  <td style="font-weight:700">160h</td>
+                </tr>
+                <tr>
+                  <td>佐藤 花子</td>
+                  <td><span class="shift-cell l">遅</span></td>
+                  <td><span class="shift-cell l">遅</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell e">早</span></td>
+                  <td><span class="shift-cell e">早</span></td>
+                  <td><span class="shift-cell n">夜</span></td>
+                  <td><span class="shift-cell n">夜</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td style="color:var(--gray-400)">…</td>
+                  <td style="font-weight:700">155h</td>
+                </tr>
+                <tr>
+                  <td>鈴木 一郎</td>
+                  <td><span class="shift-cell n">夜</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell e">早</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell l">遅</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell e">早</span></td>
+                  <td><span class="shift-cell e">早</span></td>
+                  <td><span class="shift-cell l">遅</span></td>
+                  <td style="color:var(--gray-400)">…</td>
+                  <td style="font-weight:700">162h</td>
+                </tr>
+                <tr>
+                  <td>田中 美咲</td>
+                  <td><span class="shift-cell e">早</span></td>
+                  <td><span class="shift-cell n">夜</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell e">早</span></td>
+                  <td><span class="shift-cell l">遅</span></td>
+                  <td><span class="shift-cell l">遅</span></td>
+                  <td><span class="shift-cell off">休</span></td>
+                  <td><span class="shift-cell n">夜</span></td>
+                  <td style="color:var(--gray-400)">…</td>
+                  <td style="font-weight:700">158h</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     画面06  休暇申請
+══════════════════════════════════════════ -->
+<div id="s06" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">オーレンス勤怠<span>Employee Portal</span></div>
+      <nav>
+        <a href="#" onclick="show('s02',document.querySelectorAll('#nav-tabs button')[1]);return false"><span class="icon">🏠</span> ダッシュボード</a>
+        <a href="#"><span class="icon">🕐</span> 打刻</a>
+        <a href="#" onclick="show('s04',document.querySelectorAll('#nav-tabs button')[3]);return false"><span class="icon">📋</span> 勤怠一覧</a>
+        <a href="#" onclick="show('s05',document.querySelectorAll('#nav-tabs button')[4]);return false"><span class="icon">📅</span> シフト管理</a>
+        <a href="#" class="active"><span class="icon">🌴</span> 休暇申請</a>
+        <a href="#" onclick="show('s07',document.querySelectorAll('#nav-tabs button')[6]);return false"><span class="icon">✅</span> 申請・承認</a>
+      </nav>
+      <div class="sidebar-user"><div class="avatar">山</div><div class="info">山田 太郎<span>営業部</span></div></div>
+    </aside>
+    <div class="main">
+      <div class="topbar"><h1>休暇申請</h1></div>
+      <div class="page-body">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h2>新規休暇申請</h2></div>
+            <div class="card-body">
+              <div class="form-row">
+                <label class="form-label">休暇種別</label>
+                <select class="form-control">
+                  <option>▼ 有給休暇（全日）</option>
+                  <option>半日休暇（午前）</option>
+                  <option>半日休暇（午後）</option>
+                  <option>時間休暇</option>
+                  <option>特別休暇（慶弔等）</option>
+                  <option>代休</option>
+                  <option>育児休業</option>
+                </select>
+              </div>
+              <div class="form-row half">
+                <div>
+                  <label class="form-label">開始日</label>
+                  <input type="date" class="form-control" value="2026-07-01">
+                </div>
+                <div>
+                  <label class="form-label">終了日</label>
+                  <input type="date" class="form-control" value="2026-07-01">
+                </div>
+              </div>
+              <div class="days-counter">
+                📅 申請日数：<strong style="font-size:16px;margin:0 4px">1</strong>日
+              </div>
+              <div class="form-row" style="margin-top:16px">
+                <label class="form-label">申請理由（任意）</label>
+                <textarea class="form-control" rows="3" placeholder="理由を入力してください"></textarea>
+              </div>
+              <div class="form-row">
+                <label class="form-label">代替対応者</label>
+                <select class="form-control">
+                  <option>— 選択してください —</option>
+                  <option>佐藤 花子</option>
+                  <option>鈴木 一郎</option>
+                </select>
+              </div>
+              <div class="btn-row">
+                <button class="btn-outline">キャンセル</button>
+                <button class="btn-primary">申請する</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-header"><h2>有給休暇残高</h2></div>
+              <div class="card-body">
+                <div style="font-size:32px;font-weight:700;color:var(--primary)">12<span style="font-size:16px;color:var(--gray-500)"> 日</span></div>
+                <div class="quota-bar" style="margin:10px 0 6px"><div class="quota-fill" style="width:33%;background:var(--primary)"></div></div>
+                <div style="font-size:11px;color:var(--gray-500)">付与 18日 ／ 取得済 6日 ／ 残 12日</div>
+                <div style="margin-top:14px">
+                  <table>
+                    <thead><tr><th>種別</th><th>付与</th><th>取得</th><th>残</th></tr></thead>
+                    <tbody>
+                      <tr><td>有給（全日）</td><td>18日</td><td>6日</td><td><strong>12日</strong></td></tr>
+                      <tr><td>時間有給</td><td>40h</td><td>8h</td><td><strong>32h</strong></td></tr>
+                      <tr><td>特別休暇</td><td>5日</td><td>0日</td><td><strong>5日</strong></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h2>直近の申請履歴</h2></div>
+              <div class="card-body">
+                <table>
+                  <thead><tr><th>種別</th><th>日程</th><th>状態</th></tr></thead>
+                  <tbody>
+                    <tr><td>有給</td><td>7/1</td><td><span class="tag orange">申請中</span></td></tr>
+                    <tr><td>有給</td><td>6/10</td><td><span class="tag green">承認済</span></td></tr>
+                    <tr><td>半日</td><td>5/28</td><td><span class="tag green">承認済</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     画面07  承認画面
+══════════════════════════════════════════ -->
+<div id="s07" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">オーレンス勤怠<span>Manager View</span></div>
+      <nav>
+        <a href="#" onclick="show('s08',document.querySelectorAll('#nav-tabs button')[7]);return false"><span class="icon">🏠</span> 管理ダッシュボード</a>
+        <a href="#"><span class="icon">📋</span> 部署別勤怠</a>
+        <a href="#" onclick="show('s05',document.querySelectorAll('#nav-tabs button')[4]);return false"><span class="icon">📅</span> シフト管理</a>
+        <a href="#" class="active"><span class="icon">✅</span> 申請・承認<span class="notif">3</span></a>
+        <a href="#"><span class="icon">📊</span> レポート</a>
+        <a href="#"><span class="icon">⚙️</span> 管理者設定</a>
+      </nav>
+      <div class="sidebar-user"><div class="avatar">田</div><div class="info">田中 部長<span>営業部 / 管理者</span></div></div>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <h1>申請・承認</h1>
+        <span class="badge warn">未処理 3件</span>
+        <button class="btn-sm">一括承認</button>
+      </div>
+      <div class="page-body">
+        <!-- フィルター -->
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <button class="btn-primary" style="padding:6px 14px;font-size:12px">すべて</button>
+          <button class="btn-outline" style="padding:6px 14px;font-size:12px">申請中</button>
+          <button class="btn-outline" style="padding:6px 14px;font-size:12px">承認済</button>
+          <button class="btn-outline" style="padding:6px 14px;font-size:12px">差戻し</button>
+          <select class="form-control" style="width:auto;padding:6px 10px;font-size:12px">
+            <option>全種別</option><option>有給休暇</option><option>残業申請</option><option>打刻修正</option>
+          </select>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2>申請一覧</h2></div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th><input type="checkbox"></th>
+                  <th>申請者</th><th>部署</th><th>申請種別</th>
+                  <th>対象日</th><th>申請日時</th><th>状態</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:24px;height:24px;font-size:11px">山</div>山田 太郎</div></td>
+                  <td>営業部</td>
+                  <td>有給休暇（全日）</td>
+                  <td>2026/07/01</td>
+                  <td style="color:var(--gray-400)">6/24 14:30</td>
+                  <td><span class="tag orange">申請中</span></td>
+                  <td>
+                    <button class="btn-primary" style="padding:4px 10px;font-size:12px;margin-right:4px">承認</button>
+                    <button class="btn-outline" style="padding:4px 10px;font-size:12px;margin-right:4px">差戻し</button>
+                    <button style="padding:4px 10px;font-size:12px;border:1.5px solid var(--danger);color:var(--danger);background:transparent;border-radius:6px;cursor:pointer">否認</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:24px;height:24px;font-size:11px;background:#0e9f6e">佐</div>佐藤 花子</div></td>
+                  <td>総務部</td>
+                  <td>残業申請（2h）</td>
+                  <td>2026/06/25</td>
+                  <td style="color:var(--gray-400)">6/25 09:00</td>
+                  <td><span class="tag orange">申請中</span></td>
+                  <td>
+                    <button class="btn-primary" style="padding:4px 10px;font-size:12px;margin-right:4px">承認</button>
+                    <button class="btn-outline" style="padding:4px 10px;font-size:12px;margin-right:4px">差戻し</button>
+                    <button style="padding:4px 10px;font-size:12px;border:1.5px solid var(--danger);color:var(--danger);background:transparent;border-radius:6px;cursor:pointer">否認</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:24px;height:24px;font-size:11px;background:#7c3aed">鈴</div>鈴木 一郎</div></td>
+                  <td>製造部</td>
+                  <td>打刻修正（退勤）</td>
+                  <td>2026/06/20</td>
+                  <td style="color:var(--gray-400)">6/25 10:15</td>
+                  <td><span class="tag orange">申請中</span></td>
+                  <td>
+                    <button class="btn-primary" style="padding:4px 10px;font-size:12px;margin-right:4px">承認</button>
+                    <button class="btn-outline" style="padding:4px 10px;font-size:12px;margin-right:4px">差戻し</button>
+                    <button style="padding:4px 10px;font-size:12px;border:1.5px solid var(--danger);color:var(--danger);background:transparent;border-radius:6px;cursor:pointer">否認</button>
+                  </td>
+                </tr>
+                <tr style="opacity:.6">
+                  <td><input type="checkbox"></td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:24px;height:24px;font-size:11px;background:#ff5a1f">田</div>田中 美咲</div></td>
+                  <td>営業部</td>
+                  <td>有給休暇（半日）</td>
+                  <td>2026/06/18</td>
+                  <td style="color:var(--gray-400)">6/17 16:00</td>
+                  <td><span class="tag green">承認済</span></td>
+                  <td><button class="btn-outline" style="padding:4px 10px;font-size:12px">詳細</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     画面08  管理者ダッシュボード
+══════════════════════════════════════════ -->
+<div id="s08" class="screen">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">オーレンス勤怠<span>Admin Dashboard</span></div>
+      <nav>
+        <a href="#" class="active"><span class="icon">🏠</span> 管理ダッシュボード</a>
+        <a href="#"><span class="icon">📋</span> 部署別勤怠</a>
+        <a href="#" onclick="show('s05',document.querySelectorAll('#nav-tabs button')[4]);return false"><span class="icon">📅</span> シフト管理</a>
+        <a href="#" onclick="show('s07',document.querySelectorAll('#nav-tabs button')[6]);return false"><span class="icon">✅</span> 申請・承認<span class="notif">3</span></a>
+        <a href="#"><span class="icon">📊</span> 帳票・レポート</a>
+        <div class="sidebar-section">コンプライアンス</div>
+        <a href="#"><span class="icon">⚖️</span> 36協定管理</a>
+        <a href="#"><span class="icon">🌴</span> 有給管理</a>
+        <div class="sidebar-section">設定</div>
+        <a href="#"><span class="icon">👥</span> 従業員管理</a>
+        <a href="#"><span class="icon">⚙️</span> システム設定</a>
+      </nav>
+      <div class="sidebar-user"><div class="avatar">管</div><div class="info">管理者<span>人事部 / ADMIN</span></div></div>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <h1>管理者ダッシュボード</h1>
+        <span style="font-size:13px;color:var(--gray-500)">2026年6月25日</span>
+        <button class="btn-sm">📥 月次レポート出力</button>
+      </div>
+      <div class="page-body">
+        <!-- KPI -->
+        <div class="kpi-grid" style="margin-bottom:20px">
+          <div class="kpi-card accent">
+            <div class="label">全社出勤率</div>
+            <div class="value">94.2<span class="unit">%</span></div>
+            <div class="diff" style="color:rgba(255,255,255,.7)">前月 92.8%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">残業超過者</div>
+            <div class="value" style="color:var(--warning)">7<span class="unit">名</span></div>
+            <div class="diff up">▲ 先月比 +2名</div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">有給取得率</div>
+            <div class="value">68<span class="unit">%</span></div>
+            <div class="diff down">▲ 先月比 +5%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="label">36協定アラート</div>
+            <div class="value" style="color:var(--danger)">3<span class="unit">名</span></div>
+            <div class="diff up">要対応</div>
+          </div>
+        </div>
+
+        <!-- グラフ行1 -->
+        <div class="grid-3" style="margin-bottom:16px">
+          <!-- ①出勤率 -->
+          <div class="card">
+            <div class="card-header"><h2>① 出勤率推移</h2></div>
+            <div class="card-body" style="padding:16px 16px 8px">
+              <div class="bar-chart">
+                <div class="bar" style="height:85%"><div class="tooltip">1月 85%</div></div>
+                <div class="bar" style="height:88%"><div class="tooltip">2月 88%</div></div>
+                <div class="bar" style="height:91%"><div class="tooltip">3月 91%</div></div>
+                <div class="bar" style="height:90%"><div class="tooltip">4月 90%</div></div>
+                <div class="bar" style="height:92%"><div class="tooltip">5月 92%</div></div>
+                <div class="bar" style="height:94%;background:var(--primary)"><div class="tooltip">6月 94%</div></div>
+              </div>
+              <div class="bar-labels">
+                <span>1月</span><span>2月</span><span>3月</span><span>4月</span><span>5月</span><span>6月</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ②残業推移 -->
+          <div class="card">
+            <div class="card-header"><h2>② 残業時間推移</h2></div>
+            <div class="card-body" style="padding:16px 16px 8px">
+              <div class="bar-chart">
+                <div class="bar" style="height:60%;background:#fde8d8"><div class="tooltip">1月 24h</div></div>
+                <div class="bar" style="height:55%;background:#fde8d8"><div class="tooltip">2月 22h</div></div>
+                <div class="bar" style="height:70%;background:#fde8d8"><div class="tooltip">3月 28h</div></div>
+                <div class="bar" style="height:50%;background:#fde8d8"><div class="tooltip">4月 20h</div></div>
+                <div class="bar" style="height:65%;background:#fde8d8"><div class="tooltip">5月 26h</div></div>
+                <div class="bar" style="height:72%;background:var(--warning)"><div class="tooltip">6月 29h ⚠</div></div>
+              </div>
+              <div class="bar-labels">
+                <span>1月</span><span>2月</span><span>3月</span><span>4月</span><span>5月</span><span>6月</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ③有給取得率 -->
+          <div class="card">
+            <div class="card-header"><h2>③ 有給取得率</h2></div>
+            <div class="card-body" style="padding:20px">
+              <div class="donut-wrap">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--gray-200)" stroke-width="14"/>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--primary)" stroke-width="14"
+                    stroke-dasharray="163 76" stroke-dashoffset="0" stroke-linecap="round"
+                    transform="rotate(-90 50 50)"/>
+                  <text x="50" y="54" text-anchor="middle" font-size="16" font-weight="700" fill="var(--gray-800)">68%</text>
+                </svg>
+                <div class="legend">
+                  <div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div>取得済 68%</div>
+                  <div class="legend-item"><div class="legend-dot" style="background:var(--gray-200)"></div>未取得 32%</div>
+                  <div style="font-size:11px;color:var(--gray-400);margin-top:4px">目標：80%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- グラフ行2 -->
+        <div class="grid-3" style="margin-bottom:16px">
+          <!-- ④部署別勤務時間 -->
+          <div class="card">
+            <div class="card-header"><h2>④ 部署別勤務時間</h2></div>
+            <div class="card-body" style="padding:16px">
+              <table class="risk-table">
+                <tbody>
+                  <tr><td style="font-weight:600">営業部</td><td class="risk-bar-wrap"><div class="risk-bar"><div class="risk-bar-fill" style="width:90%;background:var(--primary)"></div></div></td><td>180h</td></tr>
+                  <tr><td style="font-weight:600">総務部</td><td class="risk-bar-wrap"><div class="risk-bar"><div class="risk-bar-fill" style="width:75%;background:var(--primary)"></div></div></td><td>150h</td></tr>
+                  <tr><td style="font-weight:600">製造部</td><td class="risk-bar-wrap"><div class="risk-bar"><div class="risk-bar-fill" style="width:100%;background:var(--warning)"></div></div></td><td>200h</td></tr>
+                  <tr><td style="font-weight:600">開発部</td><td class="risk-bar-wrap"><div class="risk-bar"><div class="risk-bar-fill" style="width:80%;background:var(--primary)"></div></div></td><td>160h</td></tr>
+                  <tr><td style="font-weight:600">医療部</td><td class="risk-bar-wrap"><div class="risk-bar"><div class="risk-bar-fill" style="width:95%;background:var(--danger)"></div></div></td><td>190h</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ⑤36協定超過予測 -->
+          <div class="card">
+            <div class="card-header"><h2>⑤ 36協定超過予測</h2></div>
+            <div class="card-body" style="padding:16px">
+              <div class="alert36 danger">🚨 鈴木一郎 — 今月 85h（上限 80h）</div>
+              <div class="alert36 warning">⚠️ 田中美咲 — 今月 76h（上限 80h）</div>
+              <div class="alert36 warning">⚠️ 佐藤花子 — 今月 74h（上限 80h）</div>
+              <div class="alert36 ok">✅ 山田太郎 — 今月 45h（上限 80h）</div>
+              <div style="font-size:11px;color:var(--gray-400);margin-top:8px">※上限：月45h / 年360h（特別条項 80h）</div>
+            </div>
+          </div>
+
+          <!-- ⑥離職リスク予測 -->
+          <div class="card">
+            <div class="card-header">
+              <h2>⑥ 離職リスク予測 <span style="font-size:10px;font-weight:400;color:var(--gray-400)">AI分析</span></h2>
+            </div>
+            <div class="card-body" style="padding:16px">
+              <table class="risk-table">
+                <thead><tr><th>氏名</th><th>リスク</th><th>主因</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>鈴木 一郎</td>
+                    <td>
+                      <div class="risk-bar" style="width:80px"><div class="risk-bar-fill" style="width:82%;background:var(--danger)"></div></div>
+                      <span style="font-size:11px;color:var(--danger)">高 82%</span>
+                    </td>
+                    <td style="font-size:11px;color:var(--gray-500)">残業過多・連続勤務</td>
+                  </tr>
+                  <tr>
+                    <td>田中 美咲</td>
+                    <td>
+                      <div class="risk-bar" style="width:80px"><div class="risk-bar-fill" style="width:55%;background:var(--warning)"></div></div>
+                      <span style="font-size:11px;color:var(--warning)">中 55%</span>
+                    </td>
+                    <td style="font-size:11px;color:var(--gray-500)">有給未取得</td>
+                  </tr>
+                  <tr>
+                    <td>山田 太郎</td>
+                    <td>
+                      <div class="risk-bar" style="width:80px"><div class="risk-bar-fill" style="width:20%;background:var(--success)"></div></div>
+                      <span style="font-size:11px;color:var(--success)">低 20%</span>
+                    </td>
+                    <td style="font-size:11px;color:var(--gray-500)">—</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 導入スケジュール -->
+        <div class="card">
+          <div class="card-header"><h2>📅 プロジェクトスケジュール</h2></div>
+          <div class="card-body">
+            <div class="schedule-steps">
+              <div class="step done">要件定義<span class="pct">完了</span></div>
+              <div class="step done">設計<span class="pct">完了</span></div>
+              <div class="step active">開発<span class="pct">進行中 60%</span></div>
+              <div class="step">テスト<span class="pct">予定</span></div>
+              <div class="step">リリース<span class="pct">予定</span></div>
+            </div>
+            <div class="timeline">
+              <div class="tl-item"><div class="tl-dot done"></div><div class="tl-label">要件定義</div><div class="tl-sub">2ヶ月</div></div>
+              <div class="tl-item"><div class="tl-dot done"></div><div class="tl-label">設計</div><div class="tl-sub">2ヶ月</div></div>
+              <div class="tl-item"><div class="tl-dot active"></div><div class="tl-label">開発</div><div class="tl-sub">4ヶ月</div></div>
+              <div class="tl-item"><div class="tl-dot future"></div><div class="tl-label">テスト</div><div class="tl-sub">2ヶ月</div></div>
+              <div class="tl-item"><div class="tl-dot future"></div><div class="tl-label">リリース</div><div class="tl-sub">1ヶ月</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function show(id, btn) {
+    document.querySelectorAll('.screen').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
+    const el = document.getElementById(id);
+    el.style.display = (id === 's01') ? 'flex' : 'block';
+    el.classList.add('active');
+    document.querySelectorAll('#nav-tabs button').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+  }
+
+  // Live clock
+  function tick() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const el = document.getElementById('clock');
+    if (el) el.textContent = h + ':' + m;
+  }
+  tick(); setInterval(tick, 1000);
+
+  // Init display
+  show('s01', document.querySelector('#nav-tabs button'));
+</script>
+</body>
+</html>
