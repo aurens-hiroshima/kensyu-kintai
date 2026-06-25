@@ -1,7 +1,21 @@
-.DS_Store
-Thumbs.db
-*.log
+# dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# env（絶対にGitHubに上げない）
 .env
 .env.local
-node_modules/
-.vercel/
+.env.*.local
+
+# next.js
+/.next/
+/out/
+
+# vercel
+.vercel
+
+# misc
+.DS_Store
+*.pem
+Thumbs.db
