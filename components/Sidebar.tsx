@@ -12,6 +12,7 @@ const nav = [
   { href: '/leave',    label: '休暇申請',         icon: '🌴' },
   { href: '/approve',  label: '申請・承認',       icon: '✅' },
   { href: '/admin',    label: '管理者画面',       icon: '📊' },
+  { href: '/settings', label: '設定',             icon: '⚙️' },
 ]
 
 type Props = {
